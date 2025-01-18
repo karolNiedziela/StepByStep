@@ -1,0 +1,61 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35527.113
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StepByStep.Api", "StepByStep.Api\StepByStep.Api.csproj", "{8E39F4EB-8CD7-436C-8097-029805477ED7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8F09A160-D881-4E1E-B584-AEAADB62ECA7}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		Directory.Build.props = Directory.Build.props
+		Directory.Packages.props = Directory.Packages.props
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Packages", "Packages\Packages.csproj", "{4710D955-017C-4EF4-A551-7A6F0F35B098}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{60457770-2B51-442E-8CB4-529558EE0BDD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StepByStep.AppHost", "StepByStep.AppHost\StepByStep.AppHost.csproj", "{63A4D6DF-19C1-45CF-8CC5-4CABA5C45CBA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StepByStep.ServiceDefaults", "StepByStep.ServiceDefaults\StepByStep.ServiceDefaults.csproj", "{C6D37659-FE75-4C0B-99E6-68F108F53800}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{4A8E2147-600D-4A1A-B433-FF8A0DE0278D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8E39F4EB-8CD7-436C-8097-029805477ED7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E39F4EB-8CD7-436C-8097-029805477ED7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E39F4EB-8CD7-436C-8097-029805477ED7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E39F4EB-8CD7-436C-8097-029805477ED7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4710D955-017C-4EF4-A551-7A6F0F35B098}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4710D955-017C-4EF4-A551-7A6F0F35B098}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4710D955-017C-4EF4-A551-7A6F0F35B098}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4710D955-017C-4EF4-A551-7A6F0F35B098}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60457770-2B51-442E-8CB4-529558EE0BDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60457770-2B51-442E-8CB4-529558EE0BDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60457770-2B51-442E-8CB4-529558EE0BDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60457770-2B51-442E-8CB4-529558EE0BDD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63A4D6DF-19C1-45CF-8CC5-4CABA5C45CBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63A4D6DF-19C1-45CF-8CC5-4CABA5C45CBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63A4D6DF-19C1-45CF-8CC5-4CABA5C45CBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63A4D6DF-19C1-45CF-8CC5-4CABA5C45CBA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6D37659-FE75-4C0B-99E6-68F108F53800}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6D37659-FE75-4C0B-99E6-68F108F53800}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6D37659-FE75-4C0B-99E6-68F108F53800}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6D37659-FE75-4C0B-99E6-68F108F53800}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8E39F4EB-8CD7-436C-8097-029805477ED7} = {4A8E2147-600D-4A1A-B433-FF8A0DE0278D}
+		{4710D955-017C-4EF4-A551-7A6F0F35B098} = {4A8E2147-600D-4A1A-B433-FF8A0DE0278D}
+		{63A4D6DF-19C1-45CF-8CC5-4CABA5C45CBA} = {4A8E2147-600D-4A1A-B433-FF8A0DE0278D}
+		{C6D37659-FE75-4C0B-99E6-68F108F53800} = {4A8E2147-600D-4A1A-B433-FF8A0DE0278D}
+	EndGlobalSection
+EndGlobal
