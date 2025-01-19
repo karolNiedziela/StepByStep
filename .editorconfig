@@ -1,4 +1,4 @@
-# Remove the line below if you want to inherit .editorconfig settings from higher directories
+﻿# Remove the line below if you want to inherit .editorconfig settings from higher directories
 root = true
 
 # C# files
@@ -270,6 +270,15 @@ dotnet_style_namespace_match_folder = true:suggestion
 # S125: Sections of code should not be commented out
 dotnet_diagnostic.S125.severity = none
 
+# S2325: Methods and properties that don't access instance data should be static
+dotnet_diagnostic.S2325.severity = none
+
+# S1481: Unused local variables should be removed
+dotnet_diagnostic.S1481.severity = none
+
+# S1244: Floating point numbers should not be tested for equality
+dotnet_diagnostic.S1244.severity = none
+
 # NET.CodeAnalyzers
 
 # CA2007: Consider calling ConfigureAwait on the awaited task
@@ -280,3 +289,12 @@ dotnet_diagnostic.CA1724.severity = none
 
 # CA1062: Validate arguments of public methods
 dotnet_diagnostic.CA1062.severity = none
+
+# CA2326: Avoid uninstantiated internal classes
+dotnet_diagnostic.CA1812.severity = none
+
+# CA1822: Mark members as static
+dotnet_diagnostic.CA1822.severity = none
+
+# CA1308: Normalize strings to uppercase
+dotnet_diagnostic.CA1308.severity = none
