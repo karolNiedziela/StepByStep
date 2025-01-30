@@ -2,11 +2,11 @@
 
 namespace StepByStep.Sandbox.Functions.Strings
 {
-    internal sealed class SubstringFunction : IFunction<string>
+    internal sealed class SubstringFunction : IFunction
     {
         public string Name => "substring";
 
-        public string Evaluate(string[] args)
+        public FunctionResult Evaluate(string[] args)
         {
             if (args.Length != 3)
             {
@@ -17,7 +17,7 @@ namespace StepByStep.Sandbox.Functions.Strings
             var startIndex = int.Parse(args[1], CultureInfo.InvariantCulture);
             var length = int.Parse(args[2], CultureInfo.InvariantCulture);
 
-            return str.Substring(startIndex, length);
+            return new FunctionResult(str.Substring(startIndex, length), typeof(string));
         }
     }
 }

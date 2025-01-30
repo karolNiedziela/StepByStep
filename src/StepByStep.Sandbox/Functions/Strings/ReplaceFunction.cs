@@ -1,10 +1,10 @@
 ﻿namespace StepByStep.Sandbox.Functions.Strings
 {
-    internal sealed class ReplaceFunction : IFunction<string>
+    internal sealed class ReplaceFunction : IFunction
     {
         public string Name => "replace";
 
-        public string Evaluate(string[] args)
+        public FunctionResult Evaluate(string[] args)
         {
             if (args.Length != 3)
             {
@@ -15,7 +15,7 @@
             string oldValue = args[1];
             string newValue = args[2];
 
-            return input.Replace(oldValue, newValue, StringComparison.Ordinal);
+            return new FunctionResult(input.Replace(oldValue, newValue, StringComparison.Ordinal), typeof(string));
         }
     }
 }

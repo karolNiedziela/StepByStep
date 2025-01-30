@@ -1,10 +1,12 @@
-﻿namespace StepByStep.Sandbox.Functions.Numbers
+﻿using System.Globalization;
+
+namespace StepByStep.Sandbox.Functions.Numbers
 {
-    internal sealed class AddFunction : IFunction<int>
+    internal sealed class AddFunction : IFunction
     {
         public string Name => "add";
 
-        public int Evaluate(string[] args)
+        public FunctionResult Evaluate(string[] args)
         {
             if (args.Length < 2)
             {
@@ -24,7 +26,7 @@
                 }
             }
 
-            return sum;
+            return new FunctionResult(sum.ToString(CultureInfo.InvariantCulture), typeof(int));
         }
     }
 }

@@ -1,9 +1,9 @@
 ﻿namespace StepByStep.Sandbox.Functions.Strings
 {
-    internal sealed class ConcatFunction : IFunction<string>
+    internal sealed class ConcatFunction : IFunction
     {
         public string Name => "concat";
 
-        public string Evaluate(string[] args) => string.Join("", args);
+        public FunctionResult Evaluate(string[] args) => new(string.Join("", args), typeof(string));
     }
 }

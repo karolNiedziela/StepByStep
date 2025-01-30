@@ -1,10 +1,12 @@
-﻿namespace StepByStep.Sandbox.Functions.Integers
+﻿using System.Globalization;
+
+namespace StepByStep.Sandbox.Functions.Integers
 {
-    internal sealed class SubstractFunction : IFunction<int>
+    internal sealed class SubstractFunction : IFunction
     {
         public string Name => "substract";
 
-        public int Evaluate(string[] args)
+        public FunctionResult Evaluate(string[] args)
         {
             if (args.Length != 2)
             {
@@ -16,7 +18,9 @@
                 throw new ArgumentException("Both arguments must be valid integers.");
             }
 
-            return firstNumber - secondNumber;
+            var result = firstNumber - secondNumber;
+
+            return new FunctionResult(result.ToString(CultureInfo.InvariantCulture), typeof(int));
         }
     }
 }

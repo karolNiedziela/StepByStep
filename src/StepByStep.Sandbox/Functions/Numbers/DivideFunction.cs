@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Globalization;
 
 namespace StepByStep.Sandbox.Functions.Numbers
 {
-    internal sealed class DivideFunction : IFunction<double>
+    internal sealed class DivideFunction : IFunction
     {
         public string Name => "divide";
 
-        public double Evaluate(string[] args)
+        public FunctionResult Evaluate(string[] args)
         {
             if (args.Length != 2)
             {
@@ -27,7 +23,9 @@ namespace StepByStep.Sandbox.Functions.Numbers
                 throw new DivideByZeroException("The second argument must not be zero.");
             }
 
-            return firstNumber / secondNumber;
+            var result = firstNumber / secondNumber;
+
+            return new FunctionResult(result.ToString(CultureInfo.InvariantCulture), typeof(double));
         }
     }
 }

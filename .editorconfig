@@ -279,6 +279,12 @@ dotnet_diagnostic.S1481.severity = none
 # S1244: Floating point numbers should not be tested for equality
 dotnet_diagnostic.S1244.severity = none
 
+# S3626: Jump statements should not be redundant
+dotnet_diagnostic.S3626.severity = none
+
+# S1135: Track uses of "TODO" tags
+dotnet_diagnostic.S1135.severity = none
+
 # NET.CodeAnalyzers
 
 # CA2007: Consider calling ConfigureAwait on the awaited task
@@ -298,3 +304,6 @@ dotnet_diagnostic.CA1822.severity = none
 
 # CA1308: Normalize strings to uppercase
 dotnet_diagnostic.CA1308.severity = none
+
+#CA1859: Use concrete types when possible for improved performance
+dotnet_diagnostic.CA1859.severity = none

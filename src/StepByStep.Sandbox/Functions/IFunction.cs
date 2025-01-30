@@ -3,5 +3,7 @@
     internal interface IFunction
     {
         string Name { get; }
+
+        FunctionResult Evaluate(string[] args);
     }
 }

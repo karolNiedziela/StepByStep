@@ -2,9 +2,9 @@
 using System.ComponentModel;
 using System.Text.RegularExpressions;
 
-namespace StepByStep.Sandbox
+namespace StepByStep.Sandbox.ExpressionEvaluators
 {
-    internal sealed class ExpressionEvaluator<T>
+    internal sealed class ExpressionEvaluator : IExpressionEvaluator
     {
         private readonly Dictionary<string, IFunction> _functions;
 
@@ -13,11 +13,11 @@ namespace StepByStep.Sandbox
             _functions = functions.ToDictionary(f => f.Name, f => f);
         }
 
-        public T Evaluate(string expression, List<Variable>? variables = null)
+        public ExpressionResult Evaluate(string expression, VariableType returnVariableType = VariableType.String, List<Variable>? variables = null)
         {
             if (!expression.StartsWith('@'))
             {
-                return ConvertExpression(expression);
+                return ConvertExpression(expression, returnVariableType);
             }
 
             expression = expression.Substring(1);
@@ -30,23 +30,24 @@ namespace StepByStep.Sandbox
             var extractedVariables = ExtractVariables(expression);
             foreach (var variable in extractedVariables)
             {
-                var variableValue = variables?.FirstOrDefault(v => v.Name == variable)?.Value;
+                var variableName = variable.Substring(10, variable.Length - 11);
+                var variableValue = variables?.FirstOrDefault(v => v.Name == variableName)?.Value;
                 if (variableValue != null)
                 {
                     expression = expression.Replace(variable, variableValue, StringComparison.Ordinal);
                 }
             }
 
-            return EvaluateExpression(expression, variables!);
+            return EvaluateExpression(expression, variables!, returnVariableType);
         }
 
         private List<string> ExtractVariables(string expression)
         {
-            var matches = Regex.Matches(expression, @"\b\w+\b|'[^']*'");
+            var matches = Regex.Matches(expression, @"variables\([^)]+\)");
             return matches.Select(m => m.Value).Distinct().ToList();
         }
 
-        private T EvaluateExpression(string expression, List<Variable> variables)
+        private ExpressionResult EvaluateExpression(string expression, List<Variable> variables, VariableType returnVariableType)
         {
             while (true)
             {
@@ -57,17 +58,12 @@ namespace StepByStep.Sandbox
                 }
 
                 var functionName = match.Groups[1].Value;
-                var arguments = match.Groups[2].Value.Split(',');
-
-                for (int i = 0; i < arguments.Length; i++)
-                {
-                    arguments[i] = arguments[i].Trim();
-                }
+                var arguments = match.Groups[2].Value.Split(',').Select(x => x.Trim()).ToArray();
 
                 if (_functions.TryGetValue(functionName, out var function))
                 {
                     var result = EvaluateFunction(function, arguments, variables);
-                    expression = expression.Replace(match.Value, result?.ToString() ?? string.Empty, StringComparison.Ordinal);
+                    expression = expression.Replace(match.Value, result.Value ?? string.Empty, StringComparison.Ordinal);
                 }
                 else
                 {
@@ -75,10 +71,10 @@ namespace StepByStep.Sandbox
                 }
             }
 
-            return ConvertExpression(expression);
+            return ConvertExpression(expression, returnVariableType);
         }
 
-        private object EvaluateFunction(IFunction function, string[] arguments, List<Variable> variables)
+        private FunctionResult EvaluateFunction(IFunction function, string[] arguments, List<Variable> variables)
         {
             for (int i = 0; i < arguments.Length; i++)
             {
@@ -96,24 +92,31 @@ namespace StepByStep.Sandbox
                 }
             }
 
-            return EvaluateFunctionByType(function, arguments);
+            return function.Evaluate(arguments);
         }
 
-        private object EvaluateFunctionByType(IFunction function, string[] arguments)
-            => function switch
-            {
-                IFunction<string> stringFunction => stringFunction.Evaluate(arguments),
-                IFunction<int> intFunction => intFunction.Evaluate(arguments),
-                IFunction<double> doubleFunction => doubleFunction.Evaluate(arguments),
-                _ => throw new ArgumentException("Unsupported function type.")
-            };
-        private T ConvertExpression(string expression)
+        private ExpressionResult ConvertExpression(string expression, VariableType returnVariableType)
         {
-            var converter = TypeDescriptor.GetConverter(typeof(T)) ?? throw new InvalidOperationException("No converter found.");
+            var type = GetType(returnVariableType);
+
+            var converter = TypeDescriptor.GetConverter(type) ?? throw new InvalidOperationException("No converter found.");
 
             var convertedValue = converter.ConvertFromString(expression) ?? throw new InvalidOperationException("Conversion failed.");
 
-            return (T)convertedValue;
+            var castedValue = Convert.ChangeType(convertedValue, type, System.Globalization.CultureInfo.InvariantCulture)?.ToString();
+
+            return new ExpressionResult(castedValue, type);
+        }
+
+        private Type GetType(VariableType variableType)
+        {
+            return variableType switch
+            {
+                VariableType.Boolean => typeof(bool),
+                VariableType.Integer => typeof(int),
+                VariableType.String => typeof(string),
+                _ => throw new ArgumentOutOfRangeException(nameof(variableType), variableType, null),
+            };
         }
     }
 }

@@ -1,10 +1,12 @@
-﻿namespace StepByStep.Sandbox.Functions.Numbers
+﻿using System.Globalization;
+
+namespace StepByStep.Sandbox.Functions.Numbers
 {
-    internal sealed class ModuloFunction : IFunction<int>
+    internal sealed class ModuloFunction : IFunction
     {
         public string Name => "modulo";
 
-        public int Evaluate(string[] args)
+        public FunctionResult Evaluate(string[] args)
         {
             if (args.Length != 2)
             {
@@ -21,7 +23,9 @@
                 throw new DivideByZeroException("The second argument must not be zero.");
             }
 
-            return firstNumber % secondNumber;
+            var result = firstNumber % secondNumber;
+
+            return new FunctionResult(result.ToString(CultureInfo.InvariantCulture), typeof(int));
         }
     }
 }
