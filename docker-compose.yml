@@ -1,6 +1,0 @@
-services:
-  stepbystep.api:
-    image: ${DOCKER_REGISTRY-}stepbystepapi
-    build:
-      context: .
-      dockerfile: StepByStep.Api/Dockerfile

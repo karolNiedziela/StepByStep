@@ -2,15 +2,20 @@
 using StepByStep.Sandbox;
 using StepByStep.Sandbox.ExpressionEvaluators;
 using StepByStep.Sandbox.Functions;
-using StepByStep.Sandbox.Steps.Variables;
+using StepByStep.Sandbox.Steps;
+using StepByStep.Sandbox.Steps.Variables.InitializeVariable;
+using StepByStep.Sandbox.Steps.Variables.SetVariable;
 using System.Reflection;
+using System.Text.Json;
 
 var serviceCollection = new ServiceCollection();
 RegisterFunctions(serviceCollection);
 
 serviceCollection.AddTransient<IExpressionEvaluator, ExpressionEvaluator>();
 
-serviceCollection.AddTransient<IInitializeVariable, InitializeVariable>();
+serviceCollection.AddTransient<IInitializeVariableStep, InitializeVariableStep>();
+serviceCollection.AddTransient<ISetVariableValueStep, SetVariableValueStep>();
+serviceCollection.AddTransient<IStepDeserializer, StepDeserializer>();
 serviceCollection.AddTransient<IAutomatProcessor, AutomatProcessor>();
 
 
@@ -20,23 +25,28 @@ var allFunctions = serviceProvider.GetServices<IFunction>();
 
 var expressionEvaluator = serviceProvider.GetRequiredService<IExpressionEvaluator>();
 
-var firstNameVariable = new InitializeVariable("Initialize firstname", 
+var firstNameVariable = new InitializeVariableStep("Initialize firstname", 
     new Variable("First Name", VariableType.String, "Karol"));
-var lastNameVariable = new InitializeVariable("Initialize lastname", 
+var lastNameVariable = new InitializeVariableStep("Initialize lastname", 
     new Variable("Last Name", VariableType.String, "Niedziela"));
-var fullnameVariable = new InitializeVariable("Initialize fullname", 
+var fullnameVariable = new InitializeVariableStep("Initialize fullname", 
     new Variable("Full name", VariableType.String, "@concat(First Name, ' ', Last Name)"));
+var emptyVariable = new InitializeVariableStep("Initialize empty",
+    new Variable("Empty", VariableType.String, null));
+var setValueVariable = new SetVariableValueStep("Set value", emptyVariable.Variable!, lastNameVariable.Variable!);
 
 var variables = new List<Variable>
 {
-    new("StringVariable", VariableType.String, "concat(variable1, ' ', variable2)"),
+    new("StringVariable", VariableType.String, "@concat(variable1, ' ', variable2)"),
     new("variable1", VariableType.String, "Hello"),
     new("variable2", VariableType.String, "World"),
     new("variable3", VariableType.Integer, "5"),
     new("variable4", VariableType.Integer,  "2"),
     firstNameVariable.Variable!,
     lastNameVariable.Variable!,
-    fullnameVariable.Variable!
+    fullnameVariable.Variable!,
+    emptyVariable.Variable!,
+    setValueVariable.Value
 };
 
 var result1 = expressionEvaluator.Evaluate("@concat(variables(variable1), ' ', variables(variable2))", returnVariableType: VariableType.String, variables: variables);
@@ -79,12 +89,18 @@ var result14 = expressionEvaluator.Evaluate("@replace(Apple Pie, Apple, Lemon)",
 Console.WriteLine(result14); // Lemon Pie
 
 
-var firstAutomat = new Automat();
-firstAutomat.Steps.AddRange([firstNameVariable, lastNameVariable, fullnameVariable]);
-firstAutomat.Variables.AddRange(variables);
+#pragma warning disable CA1869 // Cache and reuse 'JsonSerializerOptions' instances
+var options = new JsonSerializerOptions
+{
+    Converters = { new StepJsonConverter() },
+    WriteIndented = true
+};
+#pragma warning restore CA1869 // Cache and reuse 'JsonSerializerOptions' instances
+
+var deserializedAutomat = JsonSerializer.Deserialize<Automat>(InputTest.Input, options);
 
 var automatProcessor = serviceProvider.GetRequiredService<IAutomatProcessor>();
-await automatProcessor.RunAsync(firstAutomat);
+await automatProcessor.RunAsync(deserializedAutomat!);
 
 Console.ReadKey();
 

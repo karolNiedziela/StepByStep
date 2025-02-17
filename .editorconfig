@@ -307,3 +307,12 @@ dotnet_diagnostic.CA1308.severity = none
 
 #CA1859: Use concrete types when possible for improved performance
 dotnet_diagnostic.CA1859.severity = none
+
+#CA1720: Identifier contains type name
+dotnet_diagnostic.CA1720.severity = none
+
+#CA1002: Do not expose generic lists
+dotnet_diagnostic.CA1002.severity = none
+
+#CA2227: Collection properties should be read only
+dotnet_diagnostic.CA2227.severity = none

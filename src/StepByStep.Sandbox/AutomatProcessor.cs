@@ -1,6 +1,7 @@
 ﻿using StepByStep.Sandbox.ExpressionEvaluators;
 using StepByStep.Sandbox.Steps;
-using StepByStep.Sandbox.Steps.Variables;
+using StepByStep.Sandbox.Steps.Variables.InitializeVariable;
+using StepByStep.Sandbox.Steps.Variables.SetVariable;
 using System.Text.Json;
 
 namespace StepByStep.Sandbox
@@ -8,45 +9,37 @@ namespace StepByStep.Sandbox
     internal sealed class AutomatProcessor : IAutomatProcessor
     {
         private readonly IExpressionEvaluator _expressionEvaluator;
+        private readonly IStepDeserializer _stepDeserializer;
+        private readonly Dictionary<string, IStepHandler> _stepHandlers;
 
-        public AutomatProcessor(IExpressionEvaluator expressionEvaluator)
+        public AutomatProcessor(IExpressionEvaluator expressionEvaluator, IStepDeserializer stepDeserializer)
         {
             _expressionEvaluator = expressionEvaluator;
+            _stepDeserializer = stepDeserializer;
+            _stepHandlers = new Dictionary<string, IStepHandler>
+            {
+                { nameof(InitializeVariableStep), new InitializeVariableStepHandler() },
+                { nameof(SetVariableValueStep), new SetVariableStepHandler() }
+            };
         }
 
         public Task RunAsync(Automat automat)
         {
             foreach (var step in automat.Steps)
             {
-                var stepType = step.GetType();
+                var json = JsonSerializer.Serialize<object>(step);
 
-                var test = step as InitializeVariable;
-                if (test?.Variable?.Value == null)
+                var deserializedStep = _stepDeserializer.DeserializeStep(json);
+
+                if (!_stepHandlers.TryGetValue(deserializedStep.TypeName, out var handler))
                 {
-                    continue;
+                    throw new NotSupportedException($"Step type '{deserializedStep.TypeName}' is not supported.");
                 }
 
-                // TODO: Handle deserializing specific step to specific class {"Name":"Initialize firstname","Type":"InitializeVariable","Variable":{"Name":"First Name","VariableType":2,"Value":"Karol"}}
-                var json = JsonSerializer.Serialize(test);
-
-                var deserializedStep = DeserializeStep(json);
-
-                var result = _expressionEvaluator.Evaluate(test.Variable.Value, VariableType.String, automat.Variables);
+                handler.Handle(deserializedStep, automat, _expressionEvaluator);
             }
 
             return Task.CompletedTask;
-        }
-
-        private IStep DeserializeStep(string json)
-        {
-            var jsonDocument = JsonDocument.Parse(json);
-            var typeProperty = jsonDocument.RootElement.GetProperty("TypeName").GetString();
-
-            return typeProperty switch
-            {
-                "InitializeVariable" => JsonSerializer.Deserialize<InitializeVariable>(json)!,
-                _ => throw new NotSupportedException($"Step type '{typeProperty}' is not supported.")
-            };
         }
     }
  }
