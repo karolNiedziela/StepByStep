@@ -1,6 +1,4 @@
-﻿using StepByStep.Sandbox.Steps.Variables.InitializeVariable;
-
-namespace StepByStep.Sandbox.Steps.Variables.SetVariable
+﻿namespace StepByStep.Sandbox.Steps.Variables.SetVariable
 {
     internal sealed class SetVariableValueStep : ISetVariableValueStep
     {

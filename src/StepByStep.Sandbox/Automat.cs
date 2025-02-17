@@ -1,4 +1,5 @@
 ﻿using StepByStep.Sandbox.Steps;
+using StepByStep.Sandbox.Triggers;
 
 namespace StepByStep.Sandbox
 {
@@ -8,7 +9,9 @@ namespace StepByStep.Sandbox
 
         public string? Description { get; set; }
 
-        public required List<IStep> Steps { get; set; } = [];
+        public required ITrigger Trigger { get; set; }
+
+        public List<IStep> Steps { get; set; } = [];
 
         public List<Variable> Variables { get; set; } = [];
     }

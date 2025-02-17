@@ -1,8 +1,8 @@
-﻿using StepByStep.Core.ExpressionEvaluators;
+﻿using StepByStep.Sandbox.ExpressionEvaluators;
 
-namespace StepByStep.Core.Steps.Variables.SetVariable
+namespace StepByStep.Sandbox.Steps.Variables.SetVariable
 {
-    public sealed class SetVariableStepHandler : IStepHandler
+    internal sealed class SetVariableValueStepHandler : IStepHandler
     {
         public Task Handle(IStep step, Automat automat, IExpressionEvaluator expressionEvaluator)
         {
@@ -25,6 +25,8 @@ namespace StepByStep.Core.Steps.Variables.SetVariable
             }
                             
             existingVariable.SetValue(setVariableValueStep.Value.Value);
+
+            Console.WriteLine($"Variable value set to {existingVariable.Value}.");
 
             return Task.CompletedTask;
         }

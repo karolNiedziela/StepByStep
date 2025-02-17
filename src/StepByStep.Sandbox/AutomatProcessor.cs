@@ -1,7 +1,5 @@
 ﻿using StepByStep.Sandbox.ExpressionEvaluators;
 using StepByStep.Sandbox.Steps;
-using StepByStep.Sandbox.Steps.Variables.InitializeVariable;
-using StepByStep.Sandbox.Steps.Variables.SetVariable;
 using System.Text.Json;
 
 namespace StepByStep.Sandbox
@@ -9,37 +7,36 @@ namespace StepByStep.Sandbox
     internal sealed class AutomatProcessor : IAutomatProcessor
     {
         private readonly IExpressionEvaluator _expressionEvaluator;
-        private readonly IStepDeserializer _stepDeserializer;
-        private readonly Dictionary<string, IStepHandler> _stepHandlers;
+        private readonly IStepResolver _stepResolver;
+        private readonly IEnumerable<IStepHandler> _stepHandlers;
 
-        public AutomatProcessor(IExpressionEvaluator expressionEvaluator, IStepDeserializer stepDeserializer)
+        public AutomatProcessor(IExpressionEvaluator expressionEvaluator, IStepResolver stepResolver, IEnumerable<IStepHandler> stepHandlers)
         {
             _expressionEvaluator = expressionEvaluator;
-            _stepDeserializer = stepDeserializer;
-            _stepHandlers = new Dictionary<string, IStepHandler>
-            {
-                { nameof(InitializeVariableStep), new InitializeVariableStepHandler() },
-                { nameof(SetVariableValueStep), new SetVariableStepHandler() }
-            };
+            _stepResolver = stepResolver;
+            _stepHandlers = stepHandlers;
         }
 
-        public Task RunAsync(Automat automat)
+        public async Task RunAsync(Automat automat)
         {
             foreach (var step in automat.Steps)
             {
                 var json = JsonSerializer.Serialize<object>(step);
 
-                var deserializedStep = _stepDeserializer.DeserializeStep(json);
+                var resolvedStep = _stepResolver.Resolve(step);
 
-                if (!_stepHandlers.TryGetValue(deserializedStep.TypeName, out var handler))
+                Console.WriteLine($"Executing step: {resolvedStep.DisplayName}");
+
+                var handler = _stepHandlers.FirstOrDefault(x => x.GetType().Name == $"{resolvedStep.TypeName}Handler");
+                if (handler is null)
                 {
-                    throw new NotSupportedException($"Step type '{deserializedStep.TypeName}' is not supported.");
+                    throw new NotSupportedException($"Step type '{resolvedStep.TypeName}' is not supported.");
                 }
 
-                handler.Handle(deserializedStep, automat, _expressionEvaluator);
+                await handler.Handle(resolvedStep, automat, _expressionEvaluator);
             }
 
-            return Task.CompletedTask;
+            return;
         }
     }
  }

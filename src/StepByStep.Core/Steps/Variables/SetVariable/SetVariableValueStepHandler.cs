@@ -1,8 +1,8 @@
-﻿using StepByStep.Sandbox.ExpressionEvaluators;
+﻿using StepByStep.Core.ExpressionEvaluators;
 
-namespace StepByStep.Sandbox.Steps.Variables.SetVariable
+namespace StepByStep.Core.Steps.Variables.SetVariable
 {
-    internal sealed class SetVariableStepHandler : IStepHandler
+    public sealed class SetVariableValueStepHandler : IStepHandler
     {
         public Task Handle(IStep step, Automat automat, IExpressionEvaluator expressionEvaluator)
         {

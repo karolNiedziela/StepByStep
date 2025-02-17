@@ -18,6 +18,8 @@ namespace StepByStep.Sandbox.Steps.Variables.InitializeVariable
 
             automat.Variables.Add(initializeVariableStep.Variable);
 
+            Console.WriteLine($"Variable initialized {initializeVariableStep.Variable.Name}");
+
             return Task.CompletedTask;
         }
     }

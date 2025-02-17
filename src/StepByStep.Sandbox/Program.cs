@@ -3,21 +3,26 @@ using StepByStep.Sandbox;
 using StepByStep.Sandbox.ExpressionEvaluators;
 using StepByStep.Sandbox.Functions;
 using StepByStep.Sandbox.Steps;
+using StepByStep.Sandbox.Steps.RestApis.HTTPs;
 using StepByStep.Sandbox.Steps.Variables.InitializeVariable;
 using StepByStep.Sandbox.Steps.Variables.SetVariable;
+using StepByStep.Sandbox.Triggers;
 using System.Reflection;
 using System.Text.Json;
 
 var serviceCollection = new ServiceCollection();
 RegisterFunctions(serviceCollection);
+RegisterStepHandlers(serviceCollection);
 
 serviceCollection.AddTransient<IExpressionEvaluator, ExpressionEvaluator>();
 
 serviceCollection.AddTransient<IInitializeVariableStep, InitializeVariableStep>();
 serviceCollection.AddTransient<ISetVariableValueStep, SetVariableValueStep>();
-serviceCollection.AddTransient<IStepDeserializer, StepDeserializer>();
+serviceCollection.AddTransient<IHttpStep, HttpStep>();
+serviceCollection.AddTransient<IStepResolver, StepResolver>();
 serviceCollection.AddTransient<IAutomatProcessor, AutomatProcessor>();
 
+serviceCollection.AddHttpClient();
 
 var serviceProvider = serviceCollection.BuildServiceProvider();
 
@@ -34,6 +39,14 @@ var fullnameVariable = new InitializeVariableStep("Initialize fullname",
 var emptyVariable = new InitializeVariableStep("Initialize empty",
     new Variable("Empty", VariableType.String, null));
 var setValueVariable = new SetVariableValueStep("Set value", emptyVariable.Variable!, lastNameVariable.Variable!);
+
+var httpGetStep = new HttpStep
+{
+    DisplayName = "Random user api",
+    Url = "https://randomuser.me/api/",
+    Method = HttpMethod.Get
+};
+
 
 var variables = new List<Variable>
 {
@@ -97,10 +110,22 @@ var options = new JsonSerializerOptions
 };
 #pragma warning restore CA1869 // Cache and reuse 'JsonSerializerOptions' instances
 
-var deserializedAutomat = JsonSerializer.Deserialize<Automat>(InputTest.Input, options);
+var testAutomat = new Automat
+{
+    Name = "Manual trigger flow",
+    Trigger = new ManualTrigger(),
+    Steps = new List<IStep> { httpGetStep, firstNameVariable, lastNameVariable, fullnameVariable, emptyVariable, setValueVariable }
+};
+
+//var serializedAutomat = JsonSerializer.Serialize(testAutomat, options);
+
+//var deserializedAutomat = JsonSerializer.Deserialize<Automat>(InputTest.Input, options);
 
 var automatProcessor = serviceProvider.GetRequiredService<IAutomatProcessor>();
-await automatProcessor.RunAsync(deserializedAutomat!);
+
+await automatProcessor.RunAsync(testAutomat);
+
+//await automatProcessor.RunAsync(deserializedAutomat!);
 
 Console.ReadKey();
 
@@ -114,5 +139,17 @@ void RegisterFunctions(IServiceCollection services)
     foreach (var implementation in implementations)
     {
         services.AddTransient(functionType, implementation);
+    }
+}
+
+void RegisterStepHandlers(IServiceCollection services)
+{
+    var stepHandlerType = typeof(IStepHandler);
+    var implementations = Assembly.GetExecutingAssembly()
+                                  .GetTypes()
+                                  .Where(t => stepHandlerType.IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract);
+    foreach (var implementation in implementations)
+    {
+        services.AddTransient(stepHandlerType, implementation);
     }
 }
